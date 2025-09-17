@@ -1,0 +1,39 @@
+name: Build & Deploy Notion site
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install loconotion (patched)
+        run: |
+          pip install --upgrade pip
+          pip install "urllib3<1.27" six==1.16.0
+          pip install git+https://github.com/dragonman225/loconotion.git
+
+      - name: Install Chrome & chromedriver
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y chromium-browser chromium-chromedriver
+          which chromedriver
+
+      - name: Generate site from Notion
+        run: |
+          mkdir -p dist
+          python3 -m loconotion --chromedriver $(which chromedriver) site.toml
+
+      - name: Deploy to gh-pages
+        run: bash ./deploy.sh
