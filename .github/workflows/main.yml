@@ -1,7 +1,6 @@
 name: Publish Notion website to GitHub Pages
 
 on:
-  # Manual update only.
   workflow_dispatch:
   
 permissions:
@@ -29,7 +28,6 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install -r loconotion/requirements.txt
-          pip install "urllib3<1.27" six==1.16.0
 
       - name: Run Loconotion
         run: |
