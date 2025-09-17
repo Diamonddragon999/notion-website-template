@@ -11,22 +11,30 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout loconotion
+      - name: Checkout patched loconotion
         uses: actions/checkout@v3
         with:
-          repository: leoncvlt/loconotion
+          repository: dragonman225/loconotion
           path: loconotion
+
       - name: Checkout this repo
         uses: actions/checkout@v3
         with:
           path: pages_repo
+
       - name: Download and install chromedriver
-        run: sudo apt install chromium-chromedriver
+        run: sudo apt-get update && sudo apt-get install -y chromium-chromedriver
+
       - name: Install Loconotion dependencies
-        run: pip install -r loconotion/requirements.txt
+        run: |
+          pip install --upgrade pip
+          pip install -r loconotion/requirements.txt
+          pip install "urllib3<1.27" six==1.16.0
+
       - name: Run Loconotion
         run: |
           python3 loconotion/loconotion --chromedriver chromedriver "pages_repo/site.toml"
+
       - name: Push to GitHub pages
         run: |
           git config --global user.name "github-actions[bot]"
